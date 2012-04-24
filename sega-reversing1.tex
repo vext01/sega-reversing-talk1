@@ -1,0 +1,230 @@
+% !TEX TS-program = pdflatex
+% !TEX encoding = UTF-8 Unicode
+
+% Copyright (c) 2012, Edd Barrett <vext01@gmail.com>
+% 
+% Permission to use, copy, modify, and/or distribute this software for any
+% purpose with or without fee is hereby granted, provided that the above
+% copyright notice and this permission notice appear in all copies.
+% 
+% THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+% WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+% MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+% ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+% WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+% ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+% OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+\documentclass{beamer}
+
+\usetheme{AnnArbor}
+\usecolortheme{crane}
+\usepackage{helvet}
+\usepackage{listings}
+
+\title{First Steps in Reversing SEGA Megadrive Games}
+\author{Edd Barrett}
+\date{\today}
+
+\lstset{
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  stringstyle=\ttfamily,
+  frame=tlbr,
+  framexleftmargin=1pt,
+  backgroundcolor=\color{white}
+}
+
+\begin{document}
+
+% ------------------------------
+
+\begin{frame}[fragile]
+  \titlepage
+  \vspace{-4em}
+  \begin{center}
+  Twitter: @vext01
+  \end{center}
+\end{frame}
+
+% ------------------------------
+
+\section{Why?}
+
+\begin{frame}[fragile]
+\frametitle{\insertsection}
+
+\begin{itemize} 
+\item When I was a kid I had a SEGA Megadrive (didn't we all).
+\item One of my favorite games was Sonic 3 for the Megadrive.
+\item I completed this many times over.
+\item There is a level select cheat ($\uparrow, \uparrow, \downarrow, \downarrow, \uparrow, \uparrow, \uparrow, \uparrow, \uparrow$)
+\item But this does not give you all of the emeralds!
+\end{itemize}
+
+\end{frame}
+
+% ------------------------------
+
+\begin{frame}[fragile]
+\frametitle{\insertsection}
+
+\begin{center}
+\large{What would any self-respecting geek do about this?}
+\vfill
+\pause
+\vfill
+\large{Complete game?} \pause \large{Hell no!}
+\vfill
+\pause
+\huge{Reverse save RAM!}
+\end{center}
+
+\end{frame}
+
+% ------------------------------
+
+\section{How Do We Start}
+
+\begin{frame}[fragile]
+\frametitle{\insertsection}
+
+\begin{itemize}
+\item Interface with Sonic 3 cart.
+\item Dump save ram to disk somehow.
+\item Identify field storing the level number in the save RAM.
+\item Modify this field.
+\item Upload modified RAM to cart.
+\item Game on!
+\end{itemize}
+
+\pause
+\vfill
+
+Pretty difficult and probably requires extra hardware.
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{\insertsection}
+
+Instead:
+
+\begin{itemize}
+\item Use emulator supporting save RAM emulation (Dgen).
+\item Examine on-disk save RAM dump.
+\item Identify field storing the level number in the save RAM.
+\item Modify save directly on disk.
+\item Game on!
+\end{itemize}
+
+\vfill
+
+Requires no special hardware or electronics knowledge :)
+
+\end{frame}
+
+%--------------------------------
+
+\section{Bindiffing Save RAM}
+
+\begin{frame}[fragile]
+\frametitle{\insertsection}
+
+We can use bindiff to identify differences between different save RAMs:
+
+XXX example
+
+\vfill
+
+Requires no hardware or electronics knowledge :)
+
+\end{frame}
+
+%--------------------------------
+
+\section{Bindiffing Save RAM}
+
+\begin{frame}[fragile]
+\frametitle{\insertsection}
+
+We can use bindiff to identify differences between different save RAMs:
+
+XXX example
+
+\vfill
+
+Requires no hardware or electronics knowledge :)
+
+\end{frame}
+
+% ------------------------------
+
+\section{System Architecture}
+
+\begin{frame}[fragile]
+\frametitle{\insertsection}
+
+A quick overview of the SEGA megadrive:
+
+\begin{block}{CPU cores}
+Basically a glorified m68k:
+
+\begin{itemize}
+\item Motorola m68000 (16MHz?)
+\item Z80 (??MHz)
+\end{itemize}
+\end{block}
+
+\vfill
+
+\begin{block}{The rest}
+\begin{itemize}
+\item FM something XXX
+\item Sq wave gen XXX
+\item Custom graphics chip (VDP)
+\end{itemize}
+\end{block}
+
+\end{frame}
+
+% ------------------------------
+
+\begin{frame}[fragile]
+\frametitle{\insertsection}
+
+
+PICTURE OF MEMORY MAP XXX 
+
+\end{frame}
+
+
+
+% ------------------------------
+
+\section{Why?}
+
+\begin{frame}[fragile]
+\frametitle{\insertsection}
+
+\end{frame}
+
+% ------------------------------
+
+\section{Why?}
+
+\begin{frame}[fragile]
+\frametitle{\insertsection}
+
+\end{frame}
+
+% ------------------------------
+
+\section{Why?}
+
+\begin{frame}[fragile]
+\frametitle{\insertsection}
+
+\end{frame}
+
+\end{document}
