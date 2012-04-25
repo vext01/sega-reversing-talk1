@@ -19,10 +19,11 @@
 
 \usetheme{AnnArbor}
 \usecolortheme{crane}
-\usepackage{helvet}
+%\usepackage{serif}
 \usepackage{listings}
+\usefonttheme{professionalfonts}
 
-\title{First Steps in Reversing SEGA Megadrive Games}
+\title{Reversing Engineering SEGA Megadrive Games}
 \author{Edd Barrett}
 \date{\today}
 
@@ -35,7 +36,11 @@
   backgroundcolor=\color{white}
 }
 
+
+
 \begin{document}
+
+
 
 % ------------------------------
 
@@ -49,121 +54,64 @@
 
 % ------------------------------
 
-\section{Why?}
+\AtBeginSection[]{%
+  \begin{frame}<beamer>
+    \frametitle{Outline}
+    \tableofcontents[sectionstyle=show/hide,subsectionstyle=hide/show/hide]
+  \end{frame}
+  \addtocounter{framenumber}{-1}% If you don't want them to affect the slide number
+}
+\section{Intro}
+
+\subsection{Why?}
 
 \begin{frame}[fragile]
-\frametitle{\insertsection}
+\frametitle{\insertsubsection}
 
 \begin{itemize} 
 \item When I was a kid I had a SEGA Megadrive (didn't we all).
-\item One of my favorite games was Sonic 3 for the Megadrive.
-\item I completed this many times over.
-\item There is a level select cheat ($\uparrow, \uparrow, \downarrow, \downarrow, \uparrow, \uparrow, \uparrow, \uparrow, \uparrow$)
-\item But this does not give you all of the emeralds!
+\vfill
+\item Since then I have learned a lot about reverse engineering.
+\vfill
+\item Curiosity led me to look at how these systems work.
 \end{itemize}
 
 \end{frame}
 
 % ------------------------------
 
+\subsection{Starting Out}
 \begin{frame}[fragile]
-\frametitle{\insertsection}
+\frametitle{\insertsubsection}
 
+\vfill
+I find the best way to learn about something is to have a clear goal.
+
+
+\begin{block}{Goal 1}
 \begin{center}
-\large{What would any self-respecting geek do about this?}
-\vfill
-\pause
-\vfill
-\large{Complete game?} \pause \large{Hell no!}
-\vfill
-\pause
-\huge{Reverse save RAM!}
+Sonic 3 -- Reverse the save game mechanism.
 \end{center}
+\end{block}
 
+\vfill
+And if I succeed:
+
+\begin{block}{Goal 2}
+\begin{center}
+Make some tooling to help reverse other games too.
+\end{center}
+\end{block}
 \end{frame}
+\vfill
 
 % ------------------------------
 
-\section{How Do We Start}
+\section{SEGA Megadrive -- Overview}
+\subsection{Basic Architcture}
 
 \begin{frame}[fragile]
-\frametitle{\insertsection}
-
-\begin{itemize}
-\item Interface with Sonic 3 cart.
-\item Dump save ram to disk somehow.
-\item Identify field storing the level number in the save RAM.
-\item Modify this field.
-\item Upload modified RAM to cart.
-\item Game on!
-\end{itemize}
-
-\pause
-\vfill
-
-Pretty difficult and probably requires extra hardware.
-
-\end{frame}
-
-\begin{frame}[fragile]
-\frametitle{\insertsection}
-
-Instead:
-
-\begin{itemize}
-\item Use emulator supporting save RAM emulation (Dgen).
-\item Examine on-disk save RAM dump.
-\item Identify field storing the level number in the save RAM.
-\item Modify save directly on disk.
-\item Game on!
-\end{itemize}
-
-\vfill
-
-Requires no special hardware or electronics knowledge :)
-
-\end{frame}
-
-%--------------------------------
-
-\section{Bindiffing Save RAM}
-
-\begin{frame}[fragile]
-\frametitle{\insertsection}
-
-We can use bindiff to identify differences between different save RAMs:
-
-XXX example
-
-\vfill
-
-Requires no hardware or electronics knowledge :)
-
-\end{frame}
-
-%--------------------------------
-
-\section{Bindiffing Save RAM}
-
-\begin{frame}[fragile]
-\frametitle{\insertsection}
-
-We can use bindiff to identify differences between different save RAMs:
-
-XXX example
-
-\vfill
-
-Requires no hardware or electronics knowledge :)
-
-\end{frame}
-
-% ------------------------------
-
-\section{System Architecture}
-
-\begin{frame}[fragile]
-\frametitle{\insertsection}
+\frametitle{\insertsubsection}
 
 A quick overview of the SEGA megadrive:
 
@@ -188,10 +136,127 @@ Basically a glorified m68k:
 
 \end{frame}
 
+% --------------------
+
+\subsection{Game Cartridges}
+
+\begin{frame}[fragile]
+\frametitle{\insertsubsection}
+
+XXX pic.
+
+\begin{block}{Inside a Typical Cart}
+\begin{itemize}
+\item ROM
+\begin{itemize}
+\item Game instructions
+\item Sprites
+\item Music
+\end{itemize}
+
+\item Battery backed memory (Optional)
+\begin{itemize}
+\item Stores persistent state. High scores, saves etc.
+\end{itemize}
+
+\item Additional graphics hardware (Optional)
+\begin{itemize}
+\item For any ``special'' graphics capabilities.
+\item Eg. Sega Virtua Processor.
+\end{itemize}
+\end{itemize}
+\end{block}
+
+\end{frame}
+
+% ------------------------------
+
+\section{Reversing the Sonic 3 Save RAM}
+
+\subsection{How Do We Start?}
+
+\begin{frame}[fragile]
+\frametitle{\insertsubsection}
+
+\begin{itemize}
+\item Interface with Sonic 3 cart.
+\item Dump save ram to disk somehow.
+\item Identify field storing the level number in the save RAM.
+\item Modify this field.
+\item Upload modified RAM to cart.
+\item Game on!
+\end{itemize}
+
+\pause
+\vfill
+
+Pretty difficult and probably requires extra hardware.
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{\insertsubsection}
+
+Instead:
+
+\begin{itemize}
+\item Use emulator supporting save RAM emulation (Dgen).
+\item Examine on-disk save RAM dump.
+\item Identify field storing the level number in the save RAM.
+\item Modify save directly on disk.
+\item Game on!
+\end{itemize}
+
+\vfill
+
+Requires no special hardware or electronics knowledge :)
+
+\end{frame}
+
+%--------------------------------
+
+\subsection{Bindiffing Save RAM}
+
+\begin{frame}[fragile]
+\frametitle{\insertsubsection}
+
+We can use bindiff to identify differences between different save RAMs:
+
+XXX example
+
+\vfill
+
+Requires no hardware or electronics knowledge :)
+
+\end{frame}
+
+%--------------------------------
+
+\subsection{Bindiffing Save RAM}
+
+\begin{frame}[fragile]
+\frametitle{\insertsubsection}
+
+We can use bindiff to identify differences between different save RAMs:
+
+XXX example
+
+\vfill
+
+Requires no hardware or electronics knowledge :)
+
+\end{frame}
+
+% ------------------------------
+
+\subsection{System Architecture}
+
+
+
 % ------------------------------
 
 \begin{frame}[fragile]
-\frametitle{\insertsection}
+\frametitle{\insertsubsection}
 
 
 PICTURE OF MEMORY MAP XXX 
@@ -202,28 +267,28 @@ PICTURE OF MEMORY MAP XXX
 
 % ------------------------------
 
-\section{Why?}
+\subsection{Why?}
 
 \begin{frame}[fragile]
-\frametitle{\insertsection}
+\frametitle{\insertsubsection}
 
 \end{frame}
 
 % ------------------------------
 
-\section{Why?}
+\subsection{Why?}
 
 \begin{frame}[fragile]
-\frametitle{\insertsection}
+\frametitle{\insertsubsection}
 
 \end{frame}
 
 % ------------------------------
 
-\section{Why?}
+\subsection{Why?}
 
 \begin{frame}[fragile]
-\frametitle{\insertsection}
+\frametitle{\insertsubsection}
 
 \end{frame}
 
