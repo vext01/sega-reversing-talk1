@@ -20,6 +20,7 @@
 \usetheme{AnnArbor}
 \usecolortheme{crane}
 %\usepackage{serif}
+\usepackage{bytefield}
 \usepackage{listings}
 \usefonttheme{professionalfonts}
 
@@ -143,7 +144,27 @@ Basically a glorified m68k:
 \begin{frame}[fragile]
 \frametitle{\insertsubsection}
 
-XXX pic.
+\begin{center}
+\includegraphics[height=0.8\textheight]{img/cart.jpg}
+\end{center}
+
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{\insertsubsection}
+
+\begin{center}
+XXX INSIDE CART PIC
+\end{center}
+
+\end{frame}
+
+% ---
+
+\begin{frame}[fragile]
+
+\frametitle{\insertsubsection}
 
 \begin{block}{Inside a Typical Cart}
 \begin{itemize}
@@ -153,16 +174,19 @@ XXX pic.
 \item Sprites
 \item Music
 \end{itemize}
+\vfill
 
 \item Battery backed memory (Optional)
 \begin{itemize}
 \item Stores persistent state. High scores, saves etc.
+\item Usually a lithium cell retain memory
 \end{itemize}
+\vfill
 
 \item Additional graphics hardware (Optional)
 \begin{itemize}
-\item For any ``special'' graphics capabilities.
-\item Eg. Sega Virtua Processor.
+\item For any ``special'' graphics capabilities
+\item Eg. Sega Virtua Processor
 \end{itemize}
 \end{itemize}
 \end{block}
@@ -171,9 +195,40 @@ XXX pic.
 
 % ------------------------------
 
+\subsection{Memory Map of the Megadrive}
+
+\begin{frame}[fragile]
+\frametitle{\insertsubsection}
+
+\begin{center}
+\includegraphics[height=.7\textheight]{img/mmap.png}
+\end{center}
+\vspace{-1em}
+
+\begin{itemize}
+\item {\small Thanks to the leaked sega2.doc we know about the memory layout.}
+\end{itemize}
+
+\footnote{Image borrowed from Nemesis}
+
+\end{frame}
+
+% ------------------------------
+
+\subsection{Memory Map of a Game Cart}
+
+\begin{frame}[fragile]
+\frametitle{\insertsubsection}
+
+XXX
+
+\end{frame}
+
+% ------------------------------
+
 \section{Reversing the Sonic 3 Save RAM}
 
-\subsection{How Do We Start?}
+\subsection{How Do We Start -- The Electronic Engineer's Approach}
 
 \begin{frame}[fragile]
 \frametitle{\insertsubsection}
@@ -187,13 +242,13 @@ XXX pic.
 \item Game on!
 \end{itemize}
 
-\pause
-\vfill
-
 Pretty difficult and probably requires extra hardware.
 
 \end{frame}
 
+% ------
+
+\subsection{How Do We Start -- The Software Engineer's Approach}
 \begin{frame}[fragile]
 \frametitle{\insertsubsection}
 
@@ -220,76 +275,32 @@ Requires no special hardware or electronics knowledge :)
 \begin{frame}[fragile]
 \frametitle{\insertsubsection}
 
-We can use bindiff to identify differences between different save RAMs:
-
-XXX example
+\begin{itemize}
+\item First we need to find the ``interesting'' parts of save RAM.
+\item We can use a bindiff tool find these.
+\end{itemize}
 
 \vfill
 
-Requires no hardware or electronics knowledge :)
+\begin{block}{Sonic 3 Example}
+\begin{itemize}
+\item In emulator, start game as Sonic -- Dump save RAM
+\item Now start game as Tails -- Dump save RAM
+\item Bindiff the two
+\end{itemize}
+\end{block}
 
 \end{frame}
 
 %--------------------------------
 
-\subsection{Bindiffing Save RAM}
-
 \begin{frame}[fragile]
 \frametitle{\insertsubsection}
 
-We can use bindiff to identify differences between different save RAMs:
-
-XXX example
-
-\vfill
-
-Requires no hardware or electronics knowledge :)
+XXX show outcome of bindiff.
 
 \end{frame}
 
-% ------------------------------
-
-\subsection{System Architecture}
-
-
-
-% ------------------------------
-
-\begin{frame}[fragile]
-\frametitle{\insertsubsection}
-
-
-PICTURE OF MEMORY MAP XXX 
-
-\end{frame}
-
-
-
-% ------------------------------
-
-\subsection{Why?}
-
-\begin{frame}[fragile]
-\frametitle{\insertsubsection}
-
-\end{frame}
-
-% ------------------------------
-
-\subsection{Why?}
-
-\begin{frame}[fragile]
-\frametitle{\insertsubsection}
-
-\end{frame}
-
-% ------------------------------
-
-\subsection{Why?}
-
-\begin{frame}[fragile]
-\frametitle{\insertsubsection}
-
-\end{frame}
+% ------
 
 \end{document}
