@@ -22,6 +22,7 @@
 %\usepackage{serif}
 \usepackage{bytefield}
 \usepackage{listings}
+\usepackage{alltt}
 \usefonttheme{professionalfonts}
 
 \title{Reversing Engineering SEGA Megadrive Games}
@@ -323,11 +324,135 @@ Requires no special hardware or electronics knowledge :)
 \begin{frame}[fragile]
 \frametitle{\insertsubsection}
 
-XXX show outcome of bindiff.
+\begin{itemize}
+\item I used \texttt{radiff2} from Radare2.
+\begin{itemize}
+\item \url{http://radare.org/y/}
+\end{itemize}
+\end{itemize}
+
+\vfill
+
+\begin{block}{Begin game with Sonic vs. Begin game with tails}
+
+\begin{alltt}
+0x0000016c 01 => 02		
+0x000001cc 70 => c7		
+0x000001ce 4f => fd		
+
+0x000001f8 01 => 02     
+0x00000258 70 => c7		
+0x0000025a 4f => fd		
+\end{alltt}
+\end{block}
+
+\vfill
 
 \end{frame}
 
-% ------
+
+%--------------------------------
+
+\begin{frame}[fragile]
+\frametitle{\insertsubsection}
+
+\begin{itemize}
+\item I used \texttt{radiff2} from Radare2.
+\begin{itemize}
+\item \url{http://radare.org/y/}
+\end{itemize}
+\end{itemize}
+
+\vfill
+
+\begin{block}{Begin game with Sonic vs. Begin game with tails}
+
+\begin{alltt}
+0x0000016c 01 => 02		  <--- Looks like character field
+0x000001cc 70 => c7		  <--- ?
+0x000001ce 4f => fd		  <--- ?
+
+0x000001f8 01 => 02		  <--- Same as above
+0x00000258 70 => c7		  <--- just at different offset.
+0x0000025a 4f => fd		  <--- For redundancy?
+\end{alltt}
+\end{block}
+
+\vfill
+
+\end{frame}
+
+%--------------------------------
+
+\begin{frame}[fragile]
+\frametitle{\insertsubsection}
+
+\begin{itemize}
+\item Tried changing the character field
+\item Either 0x0 or 0x3 is likely to be Sonic+Tails or Knuckles
+\item Cart resets save RAM.
+\item In all likelihood the unknown bytes are a checksum.
+\end{itemize}
+
+\vfill
+
+\begin{center}
+{\Huge ?}
+\end{center}
+
+\pause
+
+\vfill
+
+\begin{itemize}
+\item Asked for help on ASSembler Games forum.
+\begin{itemize}
+\item \url{http://www.assemblergames.com/forums/}
+\end{itemize}
+\end{itemize}
+
+\vfill
+
+\end{frame}
+
+%--------------------------------
+
+\subsection{A Response}
+
+
+
+
+\begin{frame}[fragile]
+\frametitle{\insertsubsection}
+
+Someone called ``Jorge Nuno'' replied to my post:
+\vfill
+
+
+\begin{lstlisting}[basicstyle={\tt\tiny}]
+For the "checksum" this was from an old conversation between me and him [Tmee]:
+
+---8<---
+OK Save Ram it is copied into 0xFFFFE600.And I think this is the code that verifies the magic checksum:
+
+sub_C362:
+    moveq #0,d7
+loc_C364:
+    move.w (a6)+,d5
+    eor.w d5,d7
+    lsr.w #1,d7
+    bcc.s loc_C370
+    eori.w #$8810,d7
+loc_C370:
+    dbf d6,loc_C364
+    rts
+
+Need to checkout a6...
+Probably d7 contains the result. 
+---8<---
+\end{lstlisting}
+
+\end{frame}
 
 % http://www.assemblergames.com/forums/showthread.php?37200-Reverse-Engineering-The-Save-Ram-on-A-Sonic-3-Genesis-Megadrive-Cartridge
 
