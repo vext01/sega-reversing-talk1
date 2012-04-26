@@ -17,8 +17,8 @@
 
 \documentclass{beamer}
 
-\usetheme{AnnArbor}
-\usecolortheme{crane}
+%\usetheme{AnnArbor}
+\usecolortheme{rose}
 %\usepackage{serif}
 \usepackage{bytefield}
 \usepackage{listings}
@@ -32,7 +32,6 @@
   basicstyle=\ttfamily\small,
   breaklines=true,
   stringstyle=\ttfamily,
-  frame=tlbr,
   framexleftmargin=1pt,
   backgroundcolor=\color{white}
 }
@@ -53,12 +52,15 @@
 
 \AtBeginSection[]{%
   \begin{frame}<beamer>
-    \frametitle{Outline}
-    \tableofcontents[sectionstyle=show/hide,subsectionstyle=hide/show/hide]
+  	\frametitle{}
+  	\begin{block}{\inserttitle}
+	{\huge \insertsection}
+	\end{block}
+    %\tableofcontents[sectionstyle=show/hide,subsectionstyle=hide/show/hide]
   \end{frame}
   \addtocounter{framenumber}{-1}% If you don't want them to affect the slide number
 }
-\section{Intro}
+\section{Introduction}
 
 \subsection{Why?}
 
@@ -116,8 +118,8 @@ A quick overview of the SEGA megadrive:
 Basically a glorified m68k:
 
 \begin{itemize}
-\item Motorola m68000 (16MHz?)
-\item Z80 (??MHz)
+\item Motorola m68000 -- 64K RAM, 7.61/7.67 MHz
+\item Zilog Z80 -- 3.58 MHz
 \end{itemize}
 \end{block}
 
@@ -125,8 +127,8 @@ Basically a glorified m68k:
 
 \begin{block}{The rest}
 \begin{itemize}
-\item FM something XXX
-\item Sq wave gen XXX
+\item Yamaha YM2612 FM (Main sound chip)
+\item Texas Instruments SN76489 PSG (Sq. Wave / White noise)
 \item Custom graphics chip (VDP)
 \end{itemize}
 \end{block}
@@ -141,7 +143,7 @@ Basically a glorified m68k:
 \frametitle{\insertsubsection}
 
 \begin{center}
-\includegraphics[height=0.8\textheight]{img/cart.jpg}
+\includegraphics[height=0.7\textheight]{img/cart.jpg}
 \end{center}
 
 \end{frame}
@@ -151,7 +153,7 @@ Basically a glorified m68k:
 \frametitle{\insertsubsection}
 
 \begin{center}
-\includegraphics[height=0.8\textheight]{img/inside_cart.jpg}
+\includegraphics[height=0.7\textheight]{img/inside_cart.jpg}
 \end{center}
 
 \end{frame}
@@ -172,7 +174,7 @@ Basically a glorified m68k:
 \end{itemize}
 \vfill
 
-\item Battery backed memory (Optional)
+\item Save RAM (Optional)
 \begin{itemize}
 \item Stores persistent state. High scores, saves etc.
 \item Usually a lithium cell retain memory
@@ -197,15 +199,14 @@ Basically a glorified m68k:
 \frametitle{\insertsubsection}
 
 \begin{center}
-\includegraphics[height=.7\textheight]{img/mmap.png}
+\includegraphics[height=.5\textheight]{img/mmap.png}
+{~~~~\raggedright \footnote{Image borrowed from Nemesis}}
 \end{center}
-\vspace{-1em}
 
 \begin{itemize}
-\item {\small Thanks to the leaked sega2.doc we know about the memory layout.}
+\item {\small Thanks to the leaked sega2.doc we know about the memory layout}
+\item {\small Cartridge is mapped at 0x0}
 \end{itemize}
-
-\footnote{Image borrowed from Nemesis}
 
 \end{frame}
 
@@ -216,7 +217,34 @@ Basically a glorified m68k:
 \begin{frame}[fragile]
 \frametitle{\insertsubsection}
 
-XXX
+\begin{itemize}
+\item First 512 bytes are the ``cart header''.
+\item The layout of the rest of the cart is specified inside the header.
+
+\vfill
+
+\begin{lstlisting}[basicstyle={\tt\tiny}]
+% ./dgm_hdump ~/roms/Sonic\ the\ Hedgehog\ 3.bin 
+Console Name : [SEGA GENESIS    ]
+Copyright    : [(C)SEGA 1993.NOV]
+Domestic Name: [SONIC THE             HEDGEHOG 3                ]
+Overseas Name: [SONIC THE             HEDGEHOG 3                ]
+Game Type    : [GM]
+Product Code : [ MK-1079 -00]
+Checksum     : a8 f2 
+IO Support   : [J       ]
+ROM Start    : 00 00 00 00 
+ROM End      : 00 1f ff ff 
+RAM          : 00 ff 00 00 00 ff ff ff 52 41 f8 20 00 20 00 01 00 20 03 ff 
+RAM Present? : [RA]
+RAM Start    : 0x200001
+RAM End      : 0x2003ff
+Modem Data   : [            ]
+Memo         : [       ?ÿÿ  ÿ         ]
+Release Country: []
+\end{lstlisting}
+
+\end{itemize}
 
 \end{frame}
 
@@ -237,6 +265,8 @@ XXX
 \item Upload modified RAM to cart.
 \item Game on!
 \end{itemize}
+
+\vfill
 
 Pretty difficult and probably requires extra hardware.
 
