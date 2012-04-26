@@ -23,6 +23,7 @@
 \usepackage{bytefield}
 \usepackage{listings}
 \usepackage{alltt}
+\usepackage{ulem}
 \usefonttheme{professionalfonts}
 
 \title{Reversing Engineering SEGA Megadrive Games}
@@ -389,7 +390,7 @@ Requires no special hardware or electronics knowledge :)
 
 \begin{itemize}
 \item Tried changing the character field
-\item Either 0x0 or 0x3 is likely to be Sonic+Tails or Knuckles
+\item Either 0x0 or 0x3 is likely to be Sonic+Tails
 \item Cart resets save RAM.
 \item In all likelihood the unknown bytes are a checksum.
 \end{itemize}
@@ -419,9 +420,6 @@ Requires no special hardware or electronics knowledge :)
 
 \subsection{A Response}
 
-
-
-
 \begin{frame}[fragile]
 \frametitle{\insertsubsection}
 
@@ -429,11 +427,13 @@ Someone called ``Jorge Nuno'' replied to my post:
 \vfill
 
 
-\begin{lstlisting}[basicstyle={\tt\tiny}]
-For the "checksum" this was from an old conversation between me and him [Tmee]:
+\begin{lstlisting}[basicstyle={\tt\scriptsize}]
+For the "checksum" this was from an old conversation between
+me and him [Tmee]:
 
 ---8<---
-OK Save Ram it is copied into 0xFFFFE600.And I think this is the code that verifies the magic checksum:
+OK Save Ram it is copied into 0xFFFFE600. And I think this
+is the code that verifies the magic checksum:
 
 sub_C362:
     moveq #0,d7
@@ -454,6 +454,255 @@ Probably d7 contains the result.
 
 \end{frame}
 
+%--------------------------------
+
+\subsection{dgm\_s3ramgen}
+
+\begin{frame}[fragile]
+\frametitle{\insertsubsection}
+
+\begin{itemize}
+\item Mex and I reimplemented the checksum in C.
+\item Wrote a tool to generate custom save RAMs for Sonic 3.
+\end{itemize}
+
+\begin{lstlisting}[basicstyle={\tt\scriptsize}]
+Usage:  dgm_s3ramgen [options] outputfile
+
+Options:
+  -c num        Character select (0=ST, 1=S, 2=T)
+  -e num        Emeralds (8-bitfield)
+  -h            Show help
+  -M            Make a MEGA-RAM (fully complete RAM)
+  -p            Pad (word-align) RAM
+  -s num        Choose slot to change
+  -x num        Debug level (0-3)
+  -z num        Choose zone (0-6)
+\end{lstlisting}
+
+\vfill
+
+Eg. RAM with save slot 1 with S+T on zone 4 with 2 emeralds:\\{\tt dgm\_s3ramgen -s1 -c0 -z3 -e3 -p myramfile}
+
+
+\end{frame}
+
 % http://www.assemblergames.com/forums/showthread.php?37200-Reverse-Engineering-The-Save-Ram-on-A-Sonic-3-Genesis-Megadrive-Cartridge
+
+\section{Goal 2: Tooling to Help}
+
+\subsection{We Won't Always be So Lucky}
+
+\begin{frame}[fragile]
+\frametitle{\insertsubsection}
+
+
+\vfill
+\begin{itemize}
+\item Now we know roughly what is involved in reversing save RAMs
+\vfill
+\item We won't be so lucky for every game.
+\begin{itemize}
+\item Ie. If I had not had a response on the forum, what would I do?
+\end{itemize}
+\vfill
+\item I would have to have found checksum code myself.
+\vfill
+\item A tool which can help can be used to reverse other games.
+\end{itemize}
+
+\vfill
+
+\end{frame}
+
+% ----
+
+\subsection{How to Find the Checksum Code in Sonic 3?}
+
+\begin{frame}[fragile]
+\frametitle{\insertsubsection}
+
+\begin{itemize}
+\item We need to know the PC (program counter) when the checksum is written. \textsc{Watchpoints}
+\vfill
+\item We need to be able to disassemble code we find here. \textsc{Disassembler}
+\vfill
+\item We need to read registers and memory to understand what code does. \textsc{Inspection}
+\vfill
+\item Perhaps we need to look at registers and memory \emph{just before} the checksum is generated. \textsc{Breakpoints}
+\end{itemize}
+
+\pause
+
+\begin{center}
+Looks like I am writing a debugger then\ldots
+\end{center}
+
+\end{frame}
+
+% ----
+
+\subsection{Implementing a Debugger}
+
+\begin{frame}[fragile]
+\frametitle{\insertsubsection}
+
+\begin{itemize}
+\item Take existing emulator and modify.
+\item I chose Dgen/SDL
+\end{itemize}
+
+\vfill
+
+\begin{block}{Dgen/SDL}
+\begin{itemize}
+\item Pretty good (fast) emulator
+\item Open-source
+\item Mature --  1999-2012 -- Dgen originally designed for DOS.
+\item Cross platform -- well \ldots UNIX + windows
+\item Original developers MIA -- Currently maintained by zamaz
+\item Written in C++
+\end{itemize}
+\end{block}
+
+\vfill
+
+{\Large ``Dgen runs well on a P2-233''~~~~:P}
+
+\end{frame}
+
+\subsection{Implementing a Debugger}
+
+\begin{frame}[fragile]
+\frametitle{\insertsubsection}
+
+\begin{itemize}
+\item Take existing emulator and modify.
+\item I chose Dgen/SDL
+\end{itemize}
+
+\vfill
+
+\begin{block}{Dgen/SDL}
+\begin{itemize}
+\item Pretty good (fast) emulator
+\item Open-source
+\item Mature --  1999-2012 -- Dgen originally designed for DOS.
+\item Cross platform -- well \ldots UNIX + windows
+\item Original developers MIA -- Currently maintained by zamaz
+\item Written in C++
+\end{itemize}
+\end{block}
+
+\vfill
+
+{\Large ``Dgen runs well on a P2-233''~~~~:P}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{\insertsubsection}
+
+\begin{itemize}
+\item CPU cores pretty well written and made the task pretty easy.
+\begin{itemize}
+\item Musashi for m68k (from Mame project)
+\item CZ80 for z80
+\end{itemize}
+\vfill
+\item The only challenging aspect was to make the debugger \emph{fast}.
+\end{itemize}
+
+\vfill
+
+\end{frame}
+
+% ---
+
+\subsection{Eg. Making Breakpoints \emph{Fast}}
+\begin{frame}[fragile]
+\frametitle{\insertsubsection}
+
+\begin{lstlisting}
+#define MAX_BREAKPOINTS                 64
+struct dgen_bp debug_bp_m68k[MAX_BREAKPOINTS];
+\end{lstlisting}
+
+\vfill
+
+\begin{itemize}
+\item After each instr, we have to check if any of these BPs will fire
+\item Checking 64 BPs if only 1 is used is wasteful (and slow)
+\item Do as little work as possible by storing BPs cleverly.
+\end{itemize}
+
+
+\vfill
+
+
+\begin{center}
+\begin{bytefield}{32}
+\begin{rightwordgroup}{BAD!}
+   \bitbox{1}{*}
+   \bitbox{1}{*}
+   \bitbox{1}{}
+   \bitbox{1}{*}
+   \bitbox{1}{}
+   \bitbox{1}{}
+   \bitbox{1}{*}
+   \bitbox{1}{*}
+   \bitbox{1}{*}
+   \bitbox{1}{}
+   \bitbox{1}{*}
+   \bitbox{4}{\ldots}
+\end{rightwordgroup}
+\end{bytefield}
+\end{center}
+
+\vfill
+
+\begin{center}
+\begin{bytefield}{32}
+\begin{rightwordgroup}{Better}
+   \bitbox{1}{*}
+   \bitbox{1}{*}
+   \bitbox{1}{*}
+   \bitbox{1}{*}
+   \bitbox{1}{*}
+   \bitbox{1}{*}
+   \bitbox{1}{*}
+   \bitbox{1}{}
+   \bitbox{1}{}
+   \bitbox{1}{}
+   \bitbox{1}{}
+   \bitbox{4}{\ldots}
+\end{rightwordgroup}
+\end{bytefield}
+\end{center}
+
+
+\vfill
+
+\end{frame}
+
+% --------
+
+\subsection{Eg. Making Breakpoints \emph{Fast} Again}
+\begin{frame}[fragile]
+\frametitle{\insertsubsection}
+
+
+\vfill
+
+Another optimisation -- Execute as many instrs as possible before drawing screen. We 
+
+\begin{enumerate}
+\item Execute single instruction
+\item Check if breakpoint fires
+\item Draw screen
+\item Goto 1
+\end{enumerate}
+
+\end{frame}
 
 \end{document}
