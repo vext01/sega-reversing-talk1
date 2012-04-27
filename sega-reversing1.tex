@@ -18,13 +18,22 @@
 \documentclass{beamer}
 
 %\usetheme{AnnArbor}
-\usecolortheme{rose}
+\usecolortheme{default}
+\usecolortheme{orchid}
+\usecolortheme{whale}
+%\usecolortheme{seagull}
 %\usepackage{serif}
 \usepackage{bytefield}
 \usepackage{listings}
 \usepackage{alltt}
 \usepackage{ulem}
 \usefonttheme{professionalfonts}
+
+
+ \usebackgroundtemplate{
+\includegraphics[width=\paperwidth,
+height=\paperheight]{img/bg.jpg}
+}
 
 \title{Reversing Engineering SEGA Megadrive Games}
 \author{Edd Barrett}
@@ -56,6 +65,7 @@
   \begin{frame}<beamer>
   	\frametitle{}
   	\begin{block}{\inserttitle}
+       \vspace{.5 em}
 	{\huge \insertsection}
 	\end{block}
     %\tableofcontents[sectionstyle=show/hide,subsectionstyle=hide/show/hide]
@@ -67,6 +77,8 @@
 \subsection{Why?}
 
 \begin{frame}[fragile]
+
+
 \frametitle{\insertsubsection}
 
 \begin{itemize} 
@@ -201,13 +213,12 @@ Basically a glorified m68k:
 \frametitle{\insertsubsection}
 
 \begin{center}
-\includegraphics[height=.5\textheight]{img/mmap.png}
+\includegraphics[height=.7\textheight]{img/mmap.png}
 {~~~~\raggedright \footnote{Image borrowed from Nemesis}}
 \end{center}
 
 \begin{itemize}
 \item {\small Thanks to the leaked sega2.doc we know about the memory layout}
-\item {\small Cartridge is mapped at 0x0}
 \end{itemize}
 
 \end{frame}
@@ -454,6 +465,18 @@ Probably d7 contains the result.
 
 \end{frame}
 
+% -----
+
+\begin{frame}[fragile]
+\frametitle{\insertsubsection}
+
+\texttt{Oh, and\ldots}
+\vfill\pause
+
+\includegraphics[width=\textwidth]{img/S3SRAM.jpg}
+
+\end{frame}
+
 %--------------------------------
 
 \subsection{dgm\_s3ramgen}
@@ -692,17 +715,77 @@ struct dgen_bp debug_bp_m68k[MAX_BREAKPOINTS];
 \frametitle{\insertsubsection}
 
 
+Another optimisation:
 \vfill
 
-Another optimisation -- Execute as many instrs as possible before drawing screen. We 
-
+\begin{block}{Too Slow}
 \begin{enumerate}
 \item Execute single instruction
 \item Check if breakpoint fires
 \item Draw screen
 \item Goto 1
 \end{enumerate}
+\end{block}
+
+\vfill
+
+\begin{block}{Faster}
+\begin{enumerate}
+\item Register CPU step handler in Musashi core.
+\item Execute as many instructions as possible (up to frame limit)
+\begin{itemize}
+\item CPU calls a handler after each instruction (last slide)
+\item End current burst of instruction if we need to break.
+\end{itemize}
+\item Draw screen
+\item Goto 1
+\end{enumerate}
+\end{block}
+\vfill
 
 \end{frame}
+
+\subsection{Demo}
+\begin{frame}[fragile]
+\frametitle{\insertsubsection}
+
+
+{\huge A quick demo:}
+
+\begin{itemize}
+\item Insert watch point on the checksum bytes
+\begin{itemize}
+\item {\tt watch 0x002001cd 4}
+\end{itemize}
+\item From here we can find the checksum code
+\end{itemize}
+
+\end{frame}
+
+
+
+\section{What is Next?}
+
+\subsection{Future Distractions}
+
+\begin{frame}[fragile]
+\frametitle{\insertsubsection}
+
+\begin{itemize}
+\item Reverse some more games
+\vfill
+\item Implement Z80 watch and break points
+\vfill
+\item Fix dgen/SDL bugs
+\vfill
+\item Make some games for the Megadrive?
+\begin{itemize}
+\item In assembler or C
+\end{itemize}•
+\end{itemize}
+
+\end{frame}
+
+% -----
 
 \end{document}
